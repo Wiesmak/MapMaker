@@ -1,7 +1,8 @@
-import registerComponents from "@/components/_export.ts"
+import registerComponents from "@/components/_register.ts"
 
 registerComponents()
-
+// language=HTML
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <mm-block></mm-block>
+  <mm-grid>
+  </mm-grid>
 `
