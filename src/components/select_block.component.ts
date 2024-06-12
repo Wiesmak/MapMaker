@@ -8,6 +8,16 @@ export class SelectBlock extends Block {
     return this._sprite
   }
 
+  set px(value: number) {
+    this.setAttribute('px', value.toString())
+    this.render()
+  }
+
+  set py(value: number) {
+    this.setAttribute('py', value.toString())
+    this.render()
+  }
+
   private calculateBackgroundPosition(spriteX: number, spriteY: number): string {
     const spriteSize = 47
     const padding = 1

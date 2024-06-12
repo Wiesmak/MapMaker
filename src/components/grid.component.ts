@@ -1,4 +1,11 @@
 export class Grid extends HTMLElement {
+
+  protected generateBlocks(sizeX: number, sizeY: number) {
+    Array.from({ length: sizeX * sizeY }).forEach(() =>
+      this.appendChild(document.createElement('mm-block'))
+    );
+  }
+
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
@@ -9,21 +16,21 @@ export class Grid extends HTMLElement {
   }
 
   render() {
+    const sizeX = parseInt(this.getAttribute('sx') || '0')
+    const sizeY = parseInt(this.getAttribute('sy') || '0')
     this.shadowRoot!.innerHTML = `
       <style>
         :host {
           display: grid;
-          grid-template-columns: repeat(32, 1fr);
-          grid-template-rows: repeat(32, 1fr);
-          width: 96vh;
-          height: 96vh; 
+          grid-template-columns: repeat(${sizeY}, 1fr);
+          grid-template-rows: repeat(${sizeX}, 1fr);
+          width: ${(sizeY * 96) / 32}vh;
+          height: ${(sizeX * 96) / 32}vh; 
         }
       </style>
       <slot></slot>
     `
 
-    Array.from({ length: 1024 }).forEach(() =>
-      this.appendChild(document.createElement('mm-block'))
-    );
+    this.generateBlocks(sizeX, sizeY)
   }
 }

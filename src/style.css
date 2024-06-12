@@ -11,3 +11,7 @@ html, body, #app {
   align-items: center;
   justify-content: center;
 }
+
+#app {
+  justify-content: space-evenly;
+}

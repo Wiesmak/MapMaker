@@ -4,6 +4,7 @@ import { registerComponent } from '@/components/_components.ts'
 const registerComponents = () => {
   registerComponent('mm-grid', Components.Grid)
   registerComponent('mm-block', Components.Block)
+  registerComponent('mm-select-grid', Components.SelectGrid)
   registerComponent('mm-select-block', Components.SelectBlock)
 }
 
