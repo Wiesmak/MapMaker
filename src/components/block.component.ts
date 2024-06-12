@@ -1,4 +1,5 @@
 import Selectable from '@/interfaces/selectable'
+import Hoverable from "@/interfaces/hoverable.ts"
 import Clickable from "@/interfaces/clickable"
 
 enum BorderColor {
@@ -6,9 +7,10 @@ enum BorderColor {
   Red = 'border-red-700',
 }
 
-export class Block extends HTMLElement implements Clickable, Selectable {
+export class Block extends HTMLElement implements Clickable, Hoverable, Selectable {
   protected _borderColor: BorderColor = BorderColor.White
   protected _selected: boolean = false
+  protected _hovered: boolean = false
   protected _backgroundImage: string = ''
 
   get selected(): boolean {
@@ -18,6 +20,16 @@ export class Block extends HTMLElement implements Clickable, Selectable {
   set selected(value: boolean) {
     this._selected = value
     this._borderColor = value ? BorderColor.Red : BorderColor.White
+    this.render()
+  }
+
+  get hovered(): boolean {
+    return this._hovered
+  }
+
+  set hovered(value: boolean) {
+    this._hovered = value
+    this._borderColor = value ? BorderColor.Red : this.selected ? BorderColor.Red : BorderColor.White
     this.render()
   }
 
@@ -46,6 +58,13 @@ export class Block extends HTMLElement implements Clickable, Selectable {
     this.toggle()
   }
 
+  public hover() {
+    this.hovered = true
+  }
+
+  public unhover() {
+    this.hovered = false
+  }
 
   constructor() {
     super()
@@ -54,11 +73,15 @@ export class Block extends HTMLElement implements Clickable, Selectable {
 
   connectedCallback() {
     this.addEventListener('click', this.click)
+    this.addEventListener('mouseenter', () => this.hover())
+    this.addEventListener('mouseleave', () => this.unhover())
     this.render()
   }
 
   disconnectedCallback() {
     this.removeEventListener('click', this.click)
+    this.removeEventListener('mouseenter', () => this.hovered = true)
+    this.removeEventListener('mouseleave', () => this.hovered = false)
   }
 
   render() {
