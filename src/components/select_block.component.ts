@@ -1,4 +1,4 @@
-import {Block} from "@/components/_components.ts"
+import {Block, Grid} from "@/components/_components.ts"
 import Sprites from "@/resources/sprites.png"
 
 export class SelectBlock extends Block {
@@ -49,6 +49,16 @@ export class SelectBlock extends Block {
 
   constructor() {
     super()
+  }
+
+  public click(): void {
+    const grid = document.querySelector('mm-grid') as Grid
+    Array.from(grid.querySelectorAll('mm-block'))
+      .filter((block: Element) => (block as Block).selected)
+      .forEach(block => {
+        (block as Block).backgroundImage = this._backgroundImage
+        ;(block as Block).selected = false
+      })
   }
 
   async connectedCallback() {
