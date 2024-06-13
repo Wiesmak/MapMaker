@@ -48,6 +48,5 @@ export class KeyboardRepository implements KeyboardRepositoryInterface {
     for (const listener of this.listeners.get(event.key)!.values()) {
       listener(event)
     }
-
   }
 }

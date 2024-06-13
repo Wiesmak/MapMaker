@@ -1,8 +1,6 @@
 import { Clickable, Hoverable,  Selectable, Scalable } from '@/interfaces/_interfaces'
-import {KeyboardRepositoryInterface, MouseRepositoryInterface} from "@/repositories/_repositories.ts"
-import {KeyboardRepositoryProvider} from "@/components/providers/keyboard_repository.provider.ts"
-import {MouseRepositoryProvider} from "@/components/providers/mouse_repository.provider.ts"
-import {Grid} from "@/components/grid.component.ts"
+import { HistoryRepositoryInterface, KeyboardRepositoryInterface, MouseRepositoryInterface } from "@/repositories/_repositories.ts"
+import { Grid, HistoryRepositoryProvider, MouseRepositoryProvider, KeyboardRepositoryProvider } from "@/components/_components.ts"
 
 enum BorderColor {
   White = 'border-on-surface',
@@ -18,6 +16,7 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
   protected _backgroundImage: string = ''
   protected keyboardRepository: KeyboardRepositoryInterface
   protected mouseRepository: MouseRepositoryInterface
+  protected historyRepository: HistoryRepositoryInterface
   protected keyboardListeners: Map<string, string> = new Map()
   protected mouseListeners: Map<string, string> = new Map()
 
@@ -107,18 +106,49 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
 
   protected delete() {
     if (this.selected) {
+      const blockCords = { x: this.x, y: this.y }
+      const undoAction = () => {
+        const grid = document.querySelector('mm-grid') as Grid
+        const gridBlocks = grid.querySelectorAll('mm-block')
+        const block = Array.from(gridBlocks).find(block => block.x === blockCords.x && block.y === blockCords.y)
+        if (block) {
+          (block as Block).backgroundImage = this.backgroundImage
+        }
+      }
+      const redoAction = () => {
+        const grid = document.querySelector('mm-grid') as Grid
+        const gridBlock = grid.querySelectorAll('mm-block')
+        const block = Array.from(gridBlock).find(block => block.x === blockCords.x && block.y === blockCords.y)
+        if (block) {
+          (block as Block).backgroundImage = ''
+        }
+      }
+      this.historyRepository.addToHistory(undoAction, redoAction)
       this.deselect()
       this.backgroundImage = ''
     }
+  }
+
+  private onWindowResize() {
+    this.mouseListeners.forEach((select, deselect) => {
+      this.mouseRepository.unlistenSelect(select)
+      this.mouseRepository.unlistenDeselect(deselect)
+    })
+    this.mouseListeners.set(
+      this.mouseRepository.listenSelect(this.getClientRects(), () => this.select()),
+      this.mouseRepository.listenDeselect(this.getClientRects(), () => this.deselect())
+    )
   }
 
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
     const keyboardProvider = document.querySelector('mm-keyboard-repository-provider') as KeyboardRepositoryProvider
-    this.keyboardRepository = keyboardProvider.getRepository()
     const mouseProvider = document.querySelector('mm-mouse-repository-provider') as MouseRepositoryProvider
+    const historyProvider = document.querySelector('mm-history-repository-provider') as HistoryRepositoryProvider
+    this.keyboardRepository = keyboardProvider.getRepository()
     this.mouseRepository = mouseProvider.getRepository()
+    this.historyRepository = historyProvider.getRepository()
   }
 
   connectedCallback() {
@@ -130,6 +160,7 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
       this.mouseRepository.listenSelect(this.getClientRects(), () => this.select()),
       this.mouseRepository.listenDeselect(this.getClientRects(), () => this.deselect())
     )
+    this.addEventListener('resize', this.onWindowResize.bind(this))
     this.render()
   }
 
@@ -142,6 +173,7 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
       this.mouseRepository.unlistenSelect(select)
       this.mouseRepository.unlistenDeselect(deselect)
     })
+    this.removeEventListener('resize', this.onWindowResize.bind(this))
   }
 
   render() {

@@ -1,3 +1,4 @@
+export * from './providers/_providers'
 export * from './grid.component'
 export * from './block.component'
 export * from './select_grid.component'

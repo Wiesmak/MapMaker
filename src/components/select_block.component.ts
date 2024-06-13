@@ -56,14 +56,36 @@ export class SelectBlock extends Block {
     const grid = document.querySelector('mm-grid') as Grid
     let lastX = 0
     let lastY = 0
+    const blocks: {x: number, y: number, oldImg: string}[] = []
     Array.from(grid.querySelectorAll('mm-block'))
       .filter((block: Element) => (block as Block).selected)
       .forEach(block => {
-        (block as Block).backgroundImage = this._backgroundImage
+        blocks.push({x: (block as Block).x, y: (block as Block).y, oldImg: (block as Block).backgroundImage})
+        ;(block as Block).backgroundImage = this._backgroundImage
         ;(block as Block).selected = false
         lastX = (block as Block).x
         lastY = (block as Block).y
       })
+
+    const undoAction = () => blocks.forEach(block => {
+      const blocks = grid.querySelectorAll('mm-block')
+      blocks.forEach(blockElement => {
+        if ((blockElement as Block).x === block.x && (blockElement as Block).y === block.y) {
+          blockElement.backgroundImage = block.oldImg
+        }
+      })
+    })
+
+    const redoAction = () => blocks.forEach(block => {
+      const blocks = grid.querySelectorAll('mm-block')
+      blocks.forEach(blockElement => {
+        if ((blockElement as Block).x === block.x && (blockElement as Block).y === block.y) {
+          blockElement.backgroundImage = this._backgroundImage
+        }
+      })
+    })
+
+    this.historyRepository.addToHistory(undoAction, redoAction)
     const autoRepository = document.querySelector('mm-auto-repository-provider') as AutoRepositoryProvider
     autoRepository.getRepository().nextAutoEvent(
       grid,
