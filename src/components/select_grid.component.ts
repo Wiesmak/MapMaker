@@ -5,17 +5,25 @@ export class SelectGrid extends Grid {
     super()
   }
 
+  get scaleFactor(): number {
+    return 0.65
+  }
 
-  protected generateBlocks(sizeX: number, sizeY: number) {
+  protected generateBlocks(sizeX: number, sizeY: number, sheetHeight = 20) {
     Array.from({ length: sizeX * sizeY }).forEach(() =>
       this.appendChild(document.createElement('mm-select-block'))
     );
 
-    Array.from({ length: sizeX }).forEach((_, x) =>
-      Array.from({ length: sizeY }).forEach((_, y) => {
-        const child = this.children[x * sizeY + y] as SelectBlock
-        child.px = y
-        child.py = x
+    Array.from({ length: sizeX }).forEach((_, y) =>
+      Array.from({ length: sizeY }).forEach((_, x) => {
+        const child = this.children[y * sizeY + x] as SelectBlock
+        child.px = x
+        child.py = y
+
+        if (y >= sheetHeight) {
+          child.px = x + sizeY
+          child.py = y - sheetHeight
+        }
       })
     );
   }

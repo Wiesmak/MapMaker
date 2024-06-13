@@ -1,13 +1,11 @@
-import Selectable from '@/interfaces/selectable'
-import Hoverable from "@/interfaces/hoverable.ts"
-import Clickable from "@/interfaces/clickable"
+import { Clickable, Hoverable,  Selectable, Scalable } from '@/interfaces/_interfaces'
 
 enum BorderColor {
   White = 'border-white',
   Red = 'border-red-700',
 }
 
-export class Block extends HTMLElement implements Clickable, Hoverable, Selectable {
+export class Block extends HTMLElement implements Clickable, Hoverable, Selectable, Scalable {
   protected _borderColor: BorderColor = BorderColor.White
   protected _selected: boolean = false
   protected _hovered: boolean = false
@@ -40,6 +38,10 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
   set backgroundImage(value: string) {
     this._backgroundImage = value
     this.render()
+  }
+
+  get scaleFactor(): number {
+    return 0.9
   }
 
   public select(): void {
@@ -92,9 +94,15 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
         background-image: url(${this._backgroundImage});
         background-position: center;
         background-size: cover;
+        background-repeat: no-repeat;
+        width: ${3 * this.scaleFactor}vh;
+        height: ${3 * this.scaleFactor}vh;
+       
+        ${ this._hovered ? 'box-shadow: 0 0 2px 0 orange;' : ''}
+        ${ this._selected ? 'box-shadow: 0 0 2px 0 red;' : '' }
       }
     </style>
   `
-    this.className = `border border-dotted ${this._borderColor} w-[3vh] h-[3vh]`
+    this.className = `${this.className} border border-dotted ${this._borderColor}`
   }
 }

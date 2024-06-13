@@ -2,20 +2,18 @@ import {Block} from "@/components/_components.ts"
 import Sprites from "@/resources/sprites.png"
 
 export class SelectBlock extends Block {
-  protected _sprite: string = ''
-
-  public get sprite(): string {
-    return this._sprite
+  get scaleFactor(): number {
+    return 0.65
   }
 
   set px(value: number) {
     this.setAttribute('px', value.toString())
-    this.render()
+    void this.render()
   }
 
   set py(value: number) {
     this.setAttribute('py', value.toString())
-    this.render()
+    void this.render()
   }
 
   private calculateBackgroundPosition(spriteX: number, spriteY: number): string {
@@ -63,18 +61,9 @@ export class SelectBlock extends Block {
     const spriteY = parseInt(this.getAttribute('py') || '0');
     const spritePosition = this.calculateBackgroundPosition(spriteX, spriteY)
     const spriteImage = await this.loadSpriteImage(Sprites)
-    this._sprite = this.scaleSprite(spriteImage, spritePosition, this.clientWidth, this.clientHeight)
+    this._backgroundImage = this.scaleSprite(spriteImage, spritePosition, this.clientWidth, this.clientHeight)
+    this.className = this._selected || this.hovered ? 'brightness-100' : 'brightness-50'
 
-    this.shadowRoot!.innerHTML = `
-    <style>
-      :host {
-        display: block;
-        background-image: url(${this._sprite});
-        background-position: center;
-        background-size: cover;
-      }
-    </style>
-  `
-    this.className = `border border-dotted ${this._borderColor} w-[3vh] h-[3vh]`
+    super.render()
   }
 }

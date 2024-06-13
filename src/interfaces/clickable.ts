@@ -1,3 +1,3 @@
-export default interface Clickable {
+export interface Clickable {
   click(): void
 }

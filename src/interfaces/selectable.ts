@@ -1,4 +1,4 @@
-export default interface Selectable {
+export interface Selectable {
   selected: boolean
   select(): void
   deselect(): void

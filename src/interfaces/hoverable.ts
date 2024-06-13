@@ -1,4 +1,4 @@
-export default interface Hoverable {
+export interface Hoverable {
   hover(): void
   unhover(): void
 }
