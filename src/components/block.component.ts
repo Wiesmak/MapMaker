@@ -1,4 +1,6 @@
 import { Clickable, Hoverable,  Selectable, Scalable } from '@/interfaces/_interfaces'
+import {KeyboardRepositoryInterface} from "@/repositories/_repositories.ts"
+import {KeyboardRepositoryProvider} from "@/components/providers/keyboard_repository.provider.ts"
 
 enum BorderColor {
   White = 'border-on-surface',
@@ -12,6 +14,7 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
   protected _selected: boolean = false
   protected _hovered: boolean = false
   protected _backgroundImage: string = ''
+  protected keyboardRepository: KeyboardRepositoryInterface
 
   get x(): number {
     return this._x
@@ -77,7 +80,15 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
   }
 
   public click(): void {
-    this.toggle()
+    if (this.keyboardRepository.isKeyDown('Control') || this.keyboardRepository.isKeyDown('Meta')) {
+      if (this.selected) this.deselect()
+      else this.select()
+    } else {
+      const grid = document.querySelector('mm-grid') as HTMLElement
+      const blocks = grid.querySelectorAll('mm-block') as Block[]
+      blocks.forEach(block => block.deselect())
+      this.select()
+    }
   }
 
   public hover() {
@@ -91,6 +102,8 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
+    const provider = document.querySelector('mm-keyboard-repository-provider') as KeyboardRepositoryProvider
+    this.keyboardRepository = provider.getRepository()
   }
 
   connectedCallback() {
