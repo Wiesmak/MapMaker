@@ -7,7 +7,6 @@ export class KeyboardRepository implements KeyboardRepositoryInterface {
   constructor() {
     window.addEventListener('keydown', (event) => this.onKeyDown(event))
     window.addEventListener('keyup', (event) => this.onKeyUp(event))
-    window.addEventListener('keyup', (event) => this.onKeyPress(event))
   }
 
   listen(key: string, listener: (event: KeyboardEvent) => void): string {
@@ -37,6 +36,7 @@ export class KeyboardRepository implements KeyboardRepositoryInterface {
 
   protected onKeyUp(event: KeyboardEvent) {
     this.keys.set(event.key, false)
+    this.onKeyPress(event)
   }
 
   protected onKeyPress(event: KeyboardEvent) {
@@ -48,5 +48,6 @@ export class KeyboardRepository implements KeyboardRepositoryInterface {
     for (const listener of this.listeners.get(event.key)!.values()) {
       listener(event)
     }
+
   }
 }

@@ -1,6 +1,8 @@
 import { Clickable, Hoverable,  Selectable, Scalable } from '@/interfaces/_interfaces'
-import {KeyboardRepositoryInterface} from "@/repositories/_repositories.ts"
+import {KeyboardRepositoryInterface, MouseRepositoryInterface} from "@/repositories/_repositories.ts"
 import {KeyboardRepositoryProvider} from "@/components/providers/keyboard_repository.provider.ts"
+import {MouseRepositoryProvider} from "@/components/providers/mouse_repository.provider.ts"
+import {Grid} from "@/components/grid.component.ts"
 
 enum BorderColor {
   White = 'border-on-surface',
@@ -15,7 +17,10 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
   protected _hovered: boolean = false
   protected _backgroundImage: string = ''
   protected keyboardRepository: KeyboardRepositoryInterface
-  protected listeners: Map<string, string> = new Map()
+  protected mouseRepository: MouseRepositoryInterface
+  protected keyboardListeners: Map<string, string> = new Map()
+  protected mouseListeners: Map<string, string> = new Map()
+
 
   get x(): number {
     return this._x
@@ -85,8 +90,8 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
       if (this.selected) this.deselect()
       else this.select()
     } else {
-      const grid = document.querySelector('mm-grid') as HTMLElement
-      const blocks = grid.querySelectorAll('mm-block') as unknown as Block[]
+      const grid = document.querySelector('mm-grid') as Grid
+      const blocks = grid.querySelectorAll('mm-block') as Block[]
       blocks.forEach(block => block.deselect())
       this.select()
     }
@@ -110,15 +115,21 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-    const provider = document.querySelector('mm-keyboard-repository-provider') as KeyboardRepositoryProvider
-    this.keyboardRepository = provider.getRepository()
+    const keyboardProvider = document.querySelector('mm-keyboard-repository-provider') as KeyboardRepositoryProvider
+    this.keyboardRepository = keyboardProvider.getRepository()
+    const mouseProvider = document.querySelector('mm-mouse-repository-provider') as MouseRepositoryProvider
+    this.mouseRepository = mouseProvider.getRepository()
   }
 
   connectedCallback() {
     this.addEventListener('click', this.click)
     this.addEventListener('mouseenter', () => this.hover())
     this.addEventListener('mouseleave', () => this.unhover())
-    this.listeners.set('Delete', this.keyboardRepository.listen('Delete', (_) => this.delete()))
+    this.keyboardListeners.set('Delete', this.keyboardRepository.listen('Delete', (_) => this.delete()))
+    this.mouseListeners.set(
+      this.mouseRepository.listenSelect(this.getClientRects(), () => this.select()),
+      this.mouseRepository.listenDeselect(this.getClientRects(), () => this.deselect())
+    )
     this.render()
   }
 
@@ -126,7 +137,11 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
     this.removeEventListener('click', this.click)
     this.removeEventListener('mouseenter', () => this.hovered = true)
     this.removeEventListener('mouseleave', () => this.hovered = false)
-    this.listeners.forEach((id, key) => this.keyboardRepository.unlisten(key, id))
+    this.keyboardListeners.forEach((id, key) => this.keyboardRepository.unlisten(key, id))
+    this.mouseListeners.forEach((select, deselect) =>  {
+      this.mouseRepository.unlistenSelect(select)
+      this.mouseRepository.unlistenDeselect(deselect)
+    })
   }
 
   render() {

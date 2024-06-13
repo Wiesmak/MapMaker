@@ -18,7 +18,7 @@ export class AutoRepository implements AutoRepositoryInterface {
 
   nextAutoEvent(grid: Grid, position: Position, event: (block: Block) => void): void {
     if (!this.autoMode) return
-    const arr: Block[] = Array.prototype.map.call(grid.querySelectorAll('mm-block') as unknown as Block, (block: Element) => block as Block)
+    const arr: Block[] = Array.prototype.map.call(grid.querySelectorAll('mm-block') as Block, (block: Element) => block as Block)
     const block = arr.filter((block) => block.y === position.y + 1 && block.x === position.x)[0] ||
       arr.filter((block) => block.y === 0 && block.x === position.x + 1)[0]
     if (block) {

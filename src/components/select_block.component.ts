@@ -68,13 +68,21 @@ export class SelectBlock extends Block {
     autoRepository.getRepository().nextAutoEvent(
       grid,
       {x: lastX, y: lastY},
-      (block: HTMLElement) => (block as SelectBlock).select()
+      (block: Block) => (block as SelectBlock).select()
     )
   }
 
   async connectedCallback() {
-    super.connectedCallback()
+    this.addEventListener('click', this.click)
+    this.addEventListener('mouseenter', () => this.hover())
+    this.addEventListener('mouseleave', () => this.unhover())
     await this.render()
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('click', this.click)
+    this.removeEventListener('mouseenter', () => this.hovered = true)
+    this.removeEventListener('mouseleave', () => this.hovered = false)
   }
 
   async render() {
