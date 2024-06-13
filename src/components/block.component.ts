@@ -103,6 +103,7 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
   protected delete() {
     if (this.selected) {
       this.deselect()
+      this.backgroundImage = ''
     }
   }
 
