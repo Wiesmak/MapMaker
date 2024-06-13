@@ -1,5 +1,4 @@
 import {KeyboardRepositoryInterface} from "./keyboard.interface.ts"
-import {list} from "postcss"
 
 export class KeyboardRepository implements KeyboardRepositoryInterface {
   private keys: Map<string, boolean> = new Map()

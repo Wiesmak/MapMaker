@@ -28,7 +28,7 @@ export class AutoSwitch extends HTMLElement implements Clickable {
 
   render() {
     // language=HTML
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
         <style>
             :host {
                 --md-sys-color-background: 28, 27, 31;

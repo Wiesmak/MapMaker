@@ -68,7 +68,7 @@ export class SelectBlock extends Block {
     autoRepository.getRepository().nextAutoEvent(
       grid,
       {x: lastX, y: lastY},
-      (block: Block) => (block as SelectBlock).select()
+      (block: HTMLElement) => (block as SelectBlock).select()
     )
   }
 

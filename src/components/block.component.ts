@@ -86,7 +86,7 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
       else this.select()
     } else {
       const grid = document.querySelector('mm-grid') as HTMLElement
-      const blocks = grid.querySelectorAll('mm-block') as Block[]
+      const blocks = grid.querySelectorAll('mm-block') as unknown as Block[]
       blocks.forEach(block => block.deselect())
       this.select()
     }

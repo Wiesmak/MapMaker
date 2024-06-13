@@ -1,3 +1,3 @@
 export interface ProviderElement<T> {
-  get(): T
+  getRepository(): T
 }
