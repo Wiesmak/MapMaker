@@ -15,5 +15,8 @@
     "tailwindcss": "^3.4.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
+  },
+  "dependencies": {
+    "msgpack-lite": "^0.1.26"
   }
 }

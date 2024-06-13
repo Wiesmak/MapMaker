@@ -8,4 +8,5 @@ export const register = () => {
   registerComponent('mm-keyboard-repository-provider', Providers.KeyboardRepositoryProvider)
   registerComponent('mm-mouse-repository-provider', Providers.MouseRepositoryProvider)
   registerComponent('mm-history-repository-provider', Providers.HistoryRepositoryProvider)
+  registerComponent('mm-file-repository-provider', Providers.FileRepositoryProvider)
 }
