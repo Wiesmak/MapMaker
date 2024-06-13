@@ -15,6 +15,7 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
   protected _hovered: boolean = false
   protected _backgroundImage: string = ''
   protected keyboardRepository: KeyboardRepositoryInterface
+  protected listeners: Map<string, string> = new Map()
 
   get x(): number {
     return this._x
@@ -99,6 +100,12 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
     this.hovered = false
   }
 
+  protected delete() {
+    if (this.selected) {
+      this.deselect()
+    }
+  }
+
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
@@ -110,6 +117,7 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
     this.addEventListener('click', this.click)
     this.addEventListener('mouseenter', () => this.hover())
     this.addEventListener('mouseleave', () => this.unhover())
+    this.listeners.set('Delete', this.keyboardRepository.listen('Delete', (_) => this.delete()))
     this.render()
   }
 
@@ -117,6 +125,7 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
     this.removeEventListener('click', this.click)
     this.removeEventListener('mouseenter', () => this.hovered = true)
     this.removeEventListener('mouseleave', () => this.hovered = false)
+    this.listeners.forEach((id, key) => this.keyboardRepository.unlisten(key, id))
   }
 
   render() {
