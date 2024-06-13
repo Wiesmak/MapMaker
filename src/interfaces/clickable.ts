@@ -1,3 +1,11 @@
+/**
+ * The Clickable interface represents a UI element that can be clicked.
+ *
+ * @interface Clickable
+ */
 export interface Clickable {
-  click(): void
+  /**
+   * Handles the click event on the UI element
+   */
+  click(): void;
 }

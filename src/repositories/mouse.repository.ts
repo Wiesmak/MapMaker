@@ -1,6 +1,20 @@
-import {MouseRepositoryInterface} from "./mouse.interface.ts"
-import {KeyboardRepositoryInterface, KeyboardRepository} from "@/repositories/_repositories.ts"
+/**
+ * @file mouse.repository.ts
+ * @description This module implements the MouseRepositoryInterface from mouse.interface.ts.
+ * It appears to handle mouse events and dispatches select and deselect events
+ * based on mouse interactions.
+ * @module mouse.repository
+ */
 
+import { KeyboardRepositoryProvider } from "@/components/_components.ts"
+import {MouseRepositoryInterface} from "./mouse.interface.ts"
+import {KeyboardRepositoryInterface} from "@/repositories/_repositories.ts"
+
+/**
+ * @class MouseRepository
+ * @description The MouseRepository class implements the MouseRepositoryInterface.
+ * It handles mouse events and dispatches select and deselect events based on mouse interactions.
+ */
 export class MouseRepository implements MouseRepositoryInterface {
   protected selectListeners: Map<string, Map<DOMRect, () => void>> = new Map()
   protected deselectListeners: Map<string, Map<DOMRect, () => void>> = new Map()
@@ -12,7 +26,8 @@ export class MouseRepository implements MouseRepositoryInterface {
   constructor() {
     document.addEventListener('mousedown', this.startSelect.bind(this))
     document.addEventListener('mouseup', this.endSelect.bind(this))
-    const keyboardRepositoryProvider = document.querySelector('mm-keyboard-repository-provider') as KeyboardRepository
+    // @ts-ignore
+    const keyboardRepositoryProvider = document.querySelector('mm-keyboard-repository-provider') as KeyboardRepositoryProvider
     this.keyboardRepository = keyboardRepositoryProvider.getRepository()
   }
 
@@ -40,7 +55,7 @@ export class MouseRepository implements MouseRepositoryInterface {
 
     this.selectListeners.forEach((listeners, _) => {
       for (const [rect, listener] of listeners) {
-        if (rect[0].left <= selectRect.right && rect[0].right >= selectRect.left && rect[0].top <= selectRect.bottom && rect[0].bottom >= selectRect.top) {
+        if (rect.left <= selectRect.right && rect.right >= selectRect.left && rect.top <= selectRect.bottom && rect.bottom >= selectRect.top) {
           listener()
         }
       }
@@ -49,7 +64,7 @@ export class MouseRepository implements MouseRepositoryInterface {
     if (this.keyboardRepository.isKeyDown('Control')) return
     this.deselectListeners.forEach((listeners, _) => {
       for (const [rect, listener] of listeners) {
-        if (rect[0].right < selectRect.left || rect[0].left > selectRect.right || rect[0].bottom < selectRect.top || rect[0].top > selectRect.bottom) {
+        if (rect.right < selectRect.left || rect.left > selectRect.right || rect.bottom < selectRect.top || rect.top > selectRect.bottom) {
           listener()
         }
       }

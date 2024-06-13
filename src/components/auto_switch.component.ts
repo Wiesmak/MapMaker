@@ -1,31 +1,56 @@
-import { Clickable } from "@/interfaces/_interfaces.ts"
+import { Clickable } from "@/interfaces/_interfaces"
 import {AutoRepositoryProvider} from "@/components/providers/_providers"
-import {AutoRepositoryInterface} from "@/repositories/auto.interface.ts"
+import {AutoRepositoryInterface} from "@/repositories/auto.interface"
+import {Logger} from "typedoc"
 
+/**
+ * AutoSwitch class represents a clickable switch in the application.
+ * It implements the Clickable interface.
+ *
+ * @example
+ * const autoSwitch = new AutoSwitch();
+ * autoSwitch.click();
+ */
 export class AutoSwitch extends HTMLElement implements Clickable {
   protected autoRepository: AutoRepositoryInterface
 
+  /**
+   * Constructor for the AutoSwitch class
+   */
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    // @ts-ignore
     const provider = document.querySelector('mm-auto-repository-provider') as AutoRepositoryProvider;
     this.autoRepository = provider.getRepository();
   }
 
-  click() {
+  /**
+   * Handles the click event on the switch
+   */
+  public click() {
     const checkbox = this.shadowRoot?.querySelector('#switch') as HTMLInputElement;
     this.autoRepository.setAutoMode(checkbox.checked);
   }
 
+  /**
+   * Lifecycle method called when the switch is connected to the DOM
+   */
   connectedCallback() {
     this.addEventListener('click', this.click);
     this.render();
   }
 
+  /**
+   * Lifecycle method called when the switch is disconnected from the DOM
+   */
   disconnectedCallback() {
     this.removeEventListener('click', this.click);
   }
 
+  /**
+   * Renders the switch
+   */
   render() {
     // language=HTML
     this.shadowRoot!.innerHTML = `

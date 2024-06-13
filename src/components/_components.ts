@@ -1,3 +1,8 @@
+/* This barrel file exports all the components used in the application.
+*
+* @module _components
+*/
+
 export * from './providers/_providers'
 export * from './grid.component'
 export * from './block.component'

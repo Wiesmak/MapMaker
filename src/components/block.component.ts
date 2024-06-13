@@ -2,144 +2,278 @@ import { Clickable, Hoverable,  Selectable, Scalable } from '@/interfaces/_inter
 import { HistoryRepositoryInterface, KeyboardRepositoryInterface, MouseRepositoryInterface } from "@/repositories/_repositories.ts"
 import { Grid, HistoryRepositoryProvider, MouseRepositoryProvider, KeyboardRepositoryProvider } from "@/components/_components.ts"
 
+/**
+ * Enumeration for border colors.
+ * @enum {string}
+ * @property {string} White - Represents the CSS class for a white border color.
+ * @property {string} Red - Represents the CSS class for a red border color.
+ *
+ * @example
+ * <mm-block>
+ * </mm-block>
+ */
 enum BorderColor {
+  /**
+   * Represents the CSS class for a white border color.
+   */
   White = 'border-on-surface',
+
+  /**
+   * Represents the CSS class for a red border color.
+   */
   Red = 'border-red-700',
 }
 
+/**
+ * Block class represents a block element in the application.
+ * It implements Clickable, Hoverable, Selectable, Scalable interfaces.
+ */
 export class Block extends HTMLElement implements Clickable, Hoverable, Selectable, Scalable {
-  protected _x: number = 0
-  protected _y: number = 0
-  protected _borderColor: BorderColor = BorderColor.White
-  protected _selected: boolean = false
-  protected _hovered: boolean = false
-  protected _backgroundImage: string = ''
-  protected keyboardRepository: KeyboardRepositoryInterface
-  protected mouseRepository: MouseRepositoryInterface
-  protected historyRepository: HistoryRepositoryInterface
-  protected keyboardListeners: Map<string, string> = new Map()
-  protected mouseListeners: Map<string, string> = new Map()
+  /**
+   * X-coordinate of the block
+   */
+  protected _x: number = 0;
 
+  /**
+   * Y-coordinate of the block
+   */
+  protected _y: number = 0;
 
+  /**
+   * Border color of the block
+   */
+  protected _borderColor: BorderColor = BorderColor.White;
+
+  /**
+   * Indicates if the block is selected
+   */
+  protected _selected: boolean = false;
+
+  /**
+   * Indicates if the block is hovered
+   */
+  protected _hovered: boolean = false;
+
+  /**
+   * Background image of the block
+   */
+  protected _backgroundImage: string = '';
+
+  /**
+   * Keyboard repository
+   */
+  protected keyboardRepository: KeyboardRepositoryInterface;
+
+  /**
+   * Mouse repository
+   */
+  protected mouseRepository: MouseRepositoryInterface;
+
+  /**
+   * History repository
+   */
+  protected historyRepository: HistoryRepositoryInterface;
+
+  /**
+   * Keyboard listeners
+   */
+  protected keyboardListeners: Map<string, string> = new Map();
+
+  /**
+   * Mouse listeners
+   */
+  protected mouseListeners: Map<string, string> = new Map();
+
+  /**
+   * Get the x-coordinate of the block
+   * @returns {number} The x-coordinate
+   */
   get x(): number {
-    return this._x
+    return this._x;
   }
 
+  /**
+   * Get the y-coordinate of the block
+   * @returns {number} The y-coordinate
+   */
   get y(): number {
-    return this._y
+    return this._y;
   }
 
+  /**
+   * Set the x-coordinate of the block
+   * @param {number} value The new x-coordinate
+   */
   set x(value: number) {
-    this._x = value
-    void this.render()
+    this._x = value;
+    void this.render();
   }
 
+  /**
+   * Set the y-coordinate of the block
+   * @param {number} value The new y-coordinate
+   */
   set y(value: number) {
-    this._y = value
-    void this.render()
+    this._y = value;
+    void this.render();
   }
 
+  /**
+   * Get the selected state of the block
+   * @returns {boolean} The selected state
+   */
   get selected(): boolean {
-    return this._selected
+    return this._selected;
   }
 
+  /**
+   * Set the selected state of the block
+   * @param {boolean} value The new selected state
+   */
   set selected(value: boolean) {
-    this._selected = value
-    this._borderColor = value ? BorderColor.Red : BorderColor.White
-    this.render()
+    this._selected = value;
+    this._borderColor = value ? BorderColor.Red : BorderColor.White;
+    this.render();
   }
 
+  /**
+   * Get the hovered state of the block
+   * @returns {boolean} The hovered state
+   */
   get hovered(): boolean {
-    return this._hovered
+    return this._hovered;
   }
 
+  /**
+   * Set the hovered state of the block
+   * @param {boolean} value The new hovered state
+   */
   set hovered(value: boolean) {
-    this._hovered = value
-    this._borderColor = value ? BorderColor.Red : this.selected ? BorderColor.Red : BorderColor.White
-    this.render()
+    this._hovered = value;
+    this._borderColor = value ? BorderColor.Red : this.selected ? BorderColor.Red : BorderColor.White;
+    this.render();
   }
 
+  /**
+   * Get the background image of the block
+   * @returns {string} The background image
+   */
   get backgroundImage(): string {
-    return this._backgroundImage
+    return this._backgroundImage;
   }
 
+  /**
+   * Set the background image of the block
+   * @param {string} value The new background image
+   */
   set backgroundImage(value: string) {
-    this._backgroundImage = value
-    this.render()
+    this._backgroundImage = value;
+    this.render();
   }
 
+  /**
+   * Get the scale factor of the block
+   * @returns {number} The scale factor
+   */
   get scaleFactor(): number {
-    return 0.9
+    return 0.9;
   }
 
+  /**
+   * Selects the block
+   */
   public select(): void {
-    this.selected = true
+    this.selected = true;
   }
 
+  /**
+   * Deselects the block
+   */
   public deselect(): void {
-    this.selected = false
+    this.selected = false;
   }
 
+  /**
+   * Toggles the selected state of the block
+   */
   public toggle(): void {
-    this.selected = !this.selected
+    this.selected = !this.selected;
   }
 
+  /**
+   * Handles the click event on the block
+   */
   public click(): void {
     if (this.keyboardRepository.isKeyDown('Control') || this.keyboardRepository.isKeyDown('Meta')) {
-      if (this.selected) this.deselect()
-      else this.select()
+      if (this.selected) this.deselect();
+      else this.select();
     } else {
-      const grid = document.querySelector('mm-grid') as Grid
-      const blocks = grid.querySelectorAll('mm-block') as Block[]
-      blocks.forEach(block => block.deselect())
-      this.select()
+      const grid = document.querySelector('mm-grid') as Grid;
+      const blocks = grid.querySelectorAll('mm-block') as NodeListOf<Block>;
+      blocks.forEach(block => block.deselect());
+      this.select();
     }
   }
 
-  public hover() {
-    this.hovered = true
+  /**
+   * Handles the hover event on the block
+   */
+  public hover(): void {
+    this.hovered = true;
   }
 
-  public unhover() {
-    this.hovered = false
+  /**
+   * Handles the unhover event on the block
+   */
+  public unhover(): void {
+    this.hovered = false;
   }
 
-  protected delete() {
+  /**
+   * Deletes the block if it is selected
+   */
+  protected delete(): void {
     if (this.selected) {
-      const blockCords = { x: this.x, y: this.y }
+      const blockCords = { x: this.x, y: this.y };
       const undoAction = () => {
-        const grid = document.querySelector('mm-grid') as Grid
-        const gridBlocks = grid.querySelectorAll('mm-block')
-        const block = Array.from(gridBlocks).find(block => block.x === blockCords.x && block.y === blockCords.y)
+        const grid = document.querySelector('mm-grid') as Grid;
+        const gridBlocks = grid.querySelectorAll('mm-block');
+        const block = Array.from(gridBlocks).find(block => (block as Block).x === blockCords.x && (block as Block).y === blockCords.y);
         if (block) {
-          (block as Block).backgroundImage = this.backgroundImage
+          (block as Block).backgroundImage = this.backgroundImage;
         }
-      }
+      };
       const redoAction = () => {
-        const grid = document.querySelector('mm-grid') as Grid
-        const gridBlock = grid.querySelectorAll('mm-block')
-        const block = Array.from(gridBlock).find(block => block.x === blockCords.x && block.y === blockCords.y)
+        const grid = document.querySelector('mm-grid') as Grid;
+        const gridBlock = grid.querySelectorAll('mm-block');
+        const block = Array.from(gridBlock).find(block => (block as Block).x === blockCords.x && (block as Block).y === blockCords.y);
         if (block) {
-          (block as Block).backgroundImage = ''
+          (block as Block).backgroundImage = '';
         }
-      }
-      this.historyRepository.addToHistory(undoAction, redoAction)
-      this.deselect()
-      this.backgroundImage = ''
+      };
+      this.historyRepository.addToHistory(undoAction, redoAction);
+      this.deselect();
+      this.backgroundImage = '';
     }
   }
 
-  private onWindowResize() {
+  /**
+   * Handles the window resize event
+   */
+  private onWindowResize(): void {
     this.mouseListeners.forEach((select, deselect) => {
       this.mouseRepository.unlistenSelect(select)
       this.mouseRepository.unlistenDeselect(deselect)
     })
     this.mouseListeners.set(
-      this.mouseRepository.listenSelect(this.getClientRects(), () => this.select()),
-      this.mouseRepository.listenDeselect(this.getClientRects(), () => this.deselect())
+      this.mouseRepository.listenSelect(this.getClientRects()[0], () => this.select()),
+      this.mouseRepository.listenDeselect(this.getClientRects()[0], () => this.deselect())
     )
   }
 
+  /**
+   * Constructor for the Block class
+   */
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
@@ -151,48 +285,58 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
     this.historyRepository = historyProvider.getRepository()
   }
 
-  connectedCallback() {
-    this.addEventListener('click', this.click)
-    this.addEventListener('mouseenter', () => this.hover())
-    this.addEventListener('mouseleave', () => this.unhover())
-    this.keyboardListeners.set('Delete', this.keyboardRepository.listen('Delete', (_) => this.delete()))
+  /**
+   * Lifecycle method called when the block is connected to the DOM
+   */
+  connectedCallback(): void {
+    this.render();
+    this.addEventListener('click', this.click);
+    this.addEventListener('mouseenter', () => this.hover());
+    this.addEventListener('mouseleave', () => this.unhover());
+    this.keyboardListeners.set('Delete', this.keyboardRepository.listen('Delete', (_) => this.delete()));
+    console.log(this)
     this.mouseListeners.set(
-      this.mouseRepository.listenSelect(this.getClientRects(), () => this.select()),
-      this.mouseRepository.listenDeselect(this.getClientRects(), () => this.deselect())
-    )
-    this.addEventListener('resize', this.onWindowResize.bind(this))
-    this.render()
+      this.mouseRepository.listenSelect(this.getClientRects()[0], () => this.select()),
+      this.mouseRepository.listenDeselect(this.getClientRects()[0], () => this.deselect())
+    );
+    this.addEventListener('resize', this.onWindowResize.bind(this));
   }
 
-  disconnectedCallback() {
-    this.removeEventListener('click', this.click)
-    this.removeEventListener('mouseenter', () => this.hovered = true)
-    this.removeEventListener('mouseleave', () => this.hovered = false)
-    this.keyboardListeners.forEach((id, key) => this.keyboardRepository.unlisten(key, id))
-    this.mouseListeners.forEach((select, deselect) =>  {
-      this.mouseRepository.unlistenSelect(select)
-      this.mouseRepository.unlistenDeselect(deselect)
-    })
-    this.removeEventListener('resize', this.onWindowResize.bind(this))
+  /**
+   * Lifecycle method called when the block is disconnected from the DOM
+   */
+  disconnectedCallback(): void {
+    this.removeEventListener('click', this.click);
+    this.removeEventListener('mouseenter', () => this.hover());
+    this.removeEventListener('mouseleave', () => this.unhover());
+    this.keyboardListeners.forEach((id, key) => this.keyboardRepository.unlisten(key, id));
+    this.mouseListeners.forEach((select, deselect) => {
+      this.mouseRepository.unlistenSelect(select);
+      this.mouseRepository.unlistenDeselect(deselect);
+    });
+    this.removeEventListener('resize', this.onWindowResize.bind(this));
   }
 
-  render() {
+  /**
+   * Renders the block
+   */
+  render(): void {
     this.shadowRoot!.innerHTML = `
-    <style>
-      :host {
-        display: block;
-        background-image: url(${this._backgroundImage});
-        background-position: center;
-        background-size: cover;
-        background-repeat: no-repeat;
-        width: ${3 * this.scaleFactor}vh;
-        height: ${3 * this.scaleFactor}vh;
-       
-        ${ this._hovered ? 'box-shadow: 0 0 2px 0 orange;' : ''}
-        ${ this._selected ? 'box-shadow: 0 0 2px 0 red;' : '' }
-      }
-    </style>
-  `
-    this.className = `border border-dotted ${this._borderColor}`
+      <style>
+        :host {
+          display: block;
+          background-image: url(${this._backgroundImage});
+          background-position: center;
+          background-size: cover;
+          background-repeat: no-repeat;
+          width: ${3 * this.scaleFactor}vh;
+          height: ${3 * this.scaleFactor}vh;
+  
+          ${ this._hovered ? 'box-shadow: 0 0 2px 0 orange;' : ''}
+          ${ this._selected ? 'box-shadow: 0 0 2px 0 red;' : '' }
+        }
+      </style>
+    `;
+    this.className = `border border-dotted ${this._borderColor}`;
   }
 }

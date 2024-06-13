@@ -1,3 +1,10 @@
+/**
+ * @file file.repository.ts
+ * @description This module implements the FileRepositoryInterface from file.interface.ts.
+ * It provides methods for saving data to a file, loading data from a file, and binding a load event.
+ * @module file.repository
+ */
+
 import {FileRepositoryInterface} from "./file.interface.ts"
 import * as msgpack from 'msgpack-lite'
 
@@ -30,8 +37,10 @@ export class FileRepository implements FileRepositoryInterface {
       reader.onload = () => resolve(reader.result);
       reader.onerror = () => reject(new Error('Failed to read file'));
     });
+    // @ts-ignore
     reader.readAsArrayBuffer(file);
     const arrayBuffer = await fileReadPromise;
+    // @ts-ignore
     const data = msgpack.decode(new Uint8Array(arrayBuffer));
     this.notifyListeners(data);
     return data;
