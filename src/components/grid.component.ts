@@ -1,4 +1,5 @@
 import { Scalable } from "@/interfaces/_interfaces";
+import {Block} from "@/components/block.component.ts"
 
 export class Grid extends HTMLElement implements Scalable {
   get scaleFactor(): number {
@@ -6,9 +7,14 @@ export class Grid extends HTMLElement implements Scalable {
   }
 
   protected generateBlocks(sizeX: number, sizeY: number) {
-    Array.from({ length: sizeX * sizeY }).forEach(() =>
-      this.appendChild(document.createElement('mm-block'))
-    );
+    for (let x = 0; x < sizeX; x++) {
+      for (let y = 0; y < sizeY; y++) {
+        const block = document.createElement('mm-block') as Block
+        block.x = x
+        block.y = y
+        this.appendChild(block)
+      }
+    }
   }
 
   constructor() {

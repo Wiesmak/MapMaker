@@ -1,11 +1,14 @@
-import * as Components from '@/components/_components.ts'
-import { registerComponent } from '@/components/_components.ts'
+import { registerComponent } from '#lib/register/_register'
+import * as Components from '@/components/_components'
+import * as Providers from '@/components/providers/_providers'
 
 const registerComponents = () => {
   registerComponent('mm-grid', Components.Grid)
   registerComponent('mm-block', Components.Block)
   registerComponent('mm-select-grid', Components.SelectGrid)
   registerComponent('mm-select-block', Components.SelectBlock)
+  registerComponent('mm-auto-switch', Components.AutoSwitch)
+  Providers.register()
 }
 
 export default registerComponents

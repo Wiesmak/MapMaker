@@ -1,15 +1,35 @@
 import { Clickable, Hoverable,  Selectable, Scalable } from '@/interfaces/_interfaces'
 
 enum BorderColor {
-  White = 'border-white',
+  White = 'border-on-surface',
   Red = 'border-red-700',
 }
 
 export class Block extends HTMLElement implements Clickable, Hoverable, Selectable, Scalable {
+  protected _x: number = 0
+  protected _y: number = 0
   protected _borderColor: BorderColor = BorderColor.White
   protected _selected: boolean = false
   protected _hovered: boolean = false
   protected _backgroundImage: string = ''
+
+  get x(): number {
+    return this._x
+  }
+
+  get y(): number {
+    return this._y
+  }
+
+  set x(value: number) {
+    this._x = value
+    void this.render()
+  }
+
+  set y(value: number) {
+    this._y = value
+    void this.render()
+  }
 
   get selected(): boolean {
     return this._selected
@@ -103,6 +123,6 @@ export class Block extends HTMLElement implements Clickable, Hoverable, Selectab
       }
     </style>
   `
-    this.className = `${this.className} border border-dotted ${this._borderColor}`
+    this.className = `border border-dotted ${this._borderColor}`
   }
 }

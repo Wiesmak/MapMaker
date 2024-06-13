@@ -1,17 +1,18 @@
-import {Block, Grid} from "@/components/_components.ts"
 import Sprites from "@/resources/sprites.png"
+import {Block, Grid} from "@/components/_components"
+import {AutoRepositoryProvider} from "@/components/providers/_providers"
 
 export class SelectBlock extends Block {
   get scaleFactor(): number {
     return 0.65
   }
 
-  set px(value: number) {
+  set x(value: number) {
     this.setAttribute('px', value.toString())
     void this.render()
   }
 
-  set py(value: number) {
+  set y(value: number) {
     this.setAttribute('py', value.toString())
     void this.render()
   }
@@ -53,12 +54,22 @@ export class SelectBlock extends Block {
 
   public click(): void {
     const grid = document.querySelector('mm-grid') as Grid
+    let lastX = 0
+    let lastY = 0
     Array.from(grid.querySelectorAll('mm-block'))
       .filter((block: Element) => (block as Block).selected)
       .forEach(block => {
         (block as Block).backgroundImage = this._backgroundImage
         ;(block as Block).selected = false
+        lastX = (block as Block).x
+        lastY = (block as Block).y
       })
+    const autoRepository = document.querySelector('mm-auto-repository-provider') as AutoRepositoryProvider
+    autoRepository.getRepository().nextAutoEvent(
+      grid,
+      {x: lastX, y: lastY},
+      (block: Block) => (block as SelectBlock).select()
+    )
   }
 
   async connectedCallback() {
@@ -72,8 +83,8 @@ export class SelectBlock extends Block {
     const spritePosition = this.calculateBackgroundPosition(spriteX, spriteY)
     const spriteImage = await this.loadSpriteImage(Sprites)
     this._backgroundImage = this.scaleSprite(spriteImage, spritePosition, this.clientWidth, this.clientHeight)
-    this.className = this._selected || this.hovered ? 'brightness-100' : 'brightness-50'
 
     super.render()
+    this.className = `${this.className} ${this._selected || this.hovered ? 'brightness-100' : 'brightness-50'}`
   }
 }

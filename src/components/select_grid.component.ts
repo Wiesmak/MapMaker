@@ -17,12 +17,12 @@ export class SelectGrid extends Grid {
     Array.from({ length: sizeX }).forEach((_, y) =>
       Array.from({ length: sizeY }).forEach((_, x) => {
         const child = this.children[y * sizeY + x] as SelectBlock
-        child.px = x
-        child.py = y
+        child.x = x
+        child.y = y
 
         if (y >= sheetHeight) {
-          child.px = x + sizeY
-          child.py = y - sheetHeight
+          child.x = x + sizeY
+          child.y = y - sheetHeight
         }
       })
     );
